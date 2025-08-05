@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Prompt Sinematik (AI-Powered)</title>
+    <title>CineGen: Generator Prompt Sinematik</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,9 +70,16 @@
 
     <!-- Login View -->
     <div id="loginView" class="w-full max-w-sm">
+        <div class="text-center mb-8">
+            <svg class="mx-auto h-12 w-auto text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5m-7.5-13.5h15a1.5 1.5 0 0 1 1.5 1.5v10.5a1.5 1.5 0 0 1-1.5 1.5h-15a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.23 5.08 3.527 3.527M16.27 5.08l-3.527 3.527" />
+            </svg>
+            <h1 class="text-4xl font-bold text-white mt-4">CineGen</h1>
+        </div>
+
         <div class="bg-gray-800 p-8 rounded-2xl shadow-lg">
-            <h2 class="text-2xl font-bold text-center text-white mb-2">Selamat Datang</h2>
-            <p class="text-center text-gray-400 mb-6">Silakan masuk dan konfigurasikan API Key</p>
+            <h2 class="text-xl font-bold text-center text-white mb-6">Login ke Akun Anda</h2>
             
             <form id="loginForm" class="mb-6">
                 <div class="mb-4">
@@ -102,6 +109,7 @@
                 </div>
             </div>
         </div>
+        <p class="text-center text-white font-bold text-xs mt-6">Made by ProsBe</p>
     </div>
 
     <!-- App View -->
@@ -357,13 +365,8 @@
 
         logoutButton.addEventListener('click', () => {
             signOut(auth).then(() => {
-                // Membersihkan form setelah logout berhasil
                 emailInput.value = '';
                 passwordInput.value = '';
-                apiKeyInput.value = '';
-                apiKeyStatus.textContent = 'Silakan masukkan dan simpan API Key Anda.';
-                apiKeyStatus.className = 'text-gray-400 text-xs mt-2';
-                loginError.textContent = '';
             }).catch((error) => {
                 console.error('Logout error:', error);
             });
