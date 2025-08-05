@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Prompt Sinematik (AI-Powered)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .spinner-small {
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-left-color: #ffffff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #promptResult {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .custom-radio-group input:checked + label {
+            background-color: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+        /* Styling untuk modal bantuan */
+        .prose-custom {
+            color: #d1d5db; /* text-gray-300 */
+        }
+        .prose-custom h3 {
+            color: #ffffff; /* text-white */
+            border-bottom: 1px solid #4b5563; /* border-gray-600 */
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .prose-custom p, .prose-custom li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .prose-custom a {
+            color: #818cf8; /* text-indigo-400 */
+            text-decoration: none;
+        }
+        .prose-custom a:hover {
+            text-decoration: underline;
+        }
+        .prose-custom strong {
+            color: #f9fafb; /* text-gray-100 */
+        }
+        .prose-custom ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center min-h-screen p-4 sm:p-6">
+
+    <!-- Login View -->
+    <div id="loginView" class="w-full max-w-sm">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-lg">
+            <h2 class="text-2xl font-bold text-center text-white mb-2">Selamat Datang</h2>
+            <p class="text-center text-gray-400 mb-6">Silakan masuk dan konfigurasikan API Key</p>
+            
+            <form id="loginForm" class="mb-6">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-300 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="email" class="shadow-inner bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="anda@email.com" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-gray-300 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="password" class="shadow-inner bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="•••••••••" required>
+                </div>
+                <button type="submit" id="loginButton" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Masuk</button>
+                <p id="loginError" class="text-red-500 text-xs italic mt-4 text-center"></p>
+            </form>
+
+            <div class="border-t border-gray-700 pt-6">
+                 <div class="mb-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="apiKey" class="block text-gray-300 text-sm font-bold">Google AI Studio API Key</label>
+                        <button type="button" id="apiKeyHelpButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold h-5 w-5 flex items-center justify-center rounded-full text-xs transition-colors" title="Bantuan API Key">?</button>
+                    </div>
+                    <input type="password" id="apiKey" class="shadow-inner bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="Masukkan API Key Anda">
+                    <p id="apiKeyStatus" class="text-xs mt-2"></p>
+                </div>
+                <div class="flex space-x-2">
+                    <button id="saveApiKeyButton" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">Simpan Kunci</button>
+                    <button id="deleteApiKeyButton" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">Hapus Kunci</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App View -->
+    <div id="appView" class="hidden w-full max-w-2xl mx-auto">
+        <header class="text-center mb-8 relative">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">Generator Prompt Sinematik</h1>
+            <p id="userEmailDisplay" class="text-sm text-gray-400 mt-2"></p>
+            <div class="absolute top-0 right-0 flex items-center space-x-2">
+                <button id="appHelpButton" class="bg-gray-700 hover:bg-gray-600 text-white font-bold h-7 w-7 flex items-center justify-center rounded-full transition-colors" title="Cara Menggunakan Aplikasi">?</button>
+                <button id="logoutButton" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1 px-3 rounded-lg transition-colors">Logout</button>
+            </div>
+        </header>
+
+        <div class="bg-gray-800 p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col space-y-6">
+            <!-- Langkah 1: Upload Gambar -->
+            <div>
+                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 1: Unggah Gambar Referensi</h2>
+                <label for="imageUpload" class="cursor-pointer">
+                    <div id="dropzone" class="border-2 border-dashed border-gray-600 hover:border-indigo-500 bg-gray-800/50 rounded-xl p-8 text-center transition-all duration-300">
+                        <input type="file" id="imageUpload" class="hidden" accept="image/*">
+                        <p class="text-gray-400">Klik atau seret gambar ke sini</p>
+                        <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF (Max 5MB)</p>
+                    </div>
+                </label>
+                <div id="imagePreviewContainer" class="mt-4 hidden text-center">
+                    <img id="imagePreview" src="#" alt="Pratinjau Gambar" class="max-w-full h-auto rounded-lg shadow-md mx-auto max-h-64"/>
+                </div>
+            </div>
+            
+            <!-- Langkah 2: Pilih Rasio -->
+            <div>
+                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 2: Pilih Rasio Video</h2>
+                <div class="flex justify-center space-x-4 custom-radio-group">
+                    <input type="radio" id="ratio_landscape" name="aspect-ratio" value="16:9" class="hidden" checked>
+                    <label for="ratio_landscape" class="cursor-pointer text-center py-2 px-6 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors duration-200">Landscape (16:9)</label>
+                    <input type="radio" id="ratio_portrait" name="aspect-ratio" value="9:16" class="hidden">
+                    <label for="ratio_portrait" class="cursor-pointer text-center py-2 px-6 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors duration-200">Portrait (9:16)</label>
+                </div>
+            </div>
+
+            <!-- Langkah 3: Dapatkan Rekomendasi Gaya -->
+            <div>
+                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 3: Dapatkan Rekomendasi Gaya</h2>
+                <button id="getRecommendationsButton" disabled class="w-full bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-md flex items-center justify-center">
+                    <span id="recommendationsButtonText">Dapatkan Rekomendasi AI</span>
+                    <div id="recommendationsSpinner" class="spinner-small hidden"></div>
+                </button>
+            </div>
+
+            <!-- Langkah 4: Pilih Gaya Visual (Dihasilkan Dinamis) -->
+            <div id="styleSelectionContainer" class="hidden">
+                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 4: Pilih Gaya Visual</h2>
+                <div id="styleOptions" class="flex flex-col gap-3 custom-radio-group"></div>
+            </div>
+
+            <!-- Langkah 5: Hasilkan Prompt -->
+            <div id="generatePromptContainer" class="hidden">
+                 <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 5: Hasilkan Prompt Detail</h2>
+                <button id="generateFinalPromptButton" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-md flex items-center justify-center">
+                    <span id="finalPromptButtonText">Hasilkan Prompt</span>
+                    <div id="finalPromptSpinner" class="spinner-small hidden"></div>
+                </button>
+            </div>
+
+            <!-- Hasil Prompt -->
+            <div id="promptResultContainer" class="hidden">
+                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Prompt Gaya Visual Video</h2>
+                <div class="relative bg-gray-900/70 p-4 rounded-lg">
+                    <button id="copyButton" class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs font-bold py-1 px-2 rounded transition-colors">Salin</button>
+                    <p id="promptResult" class="text-gray-300 text-sm leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Bantuan API Key -->
+    <div id="apiKeyHelpModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div id="apiKeyHelpModalOverlay" class="absolute inset-0 bg-black/70"></div>
+        <div class="relative bg-gray-800 text-gray-300 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 rounded-2xl shadow-lg">
+            <button id="closeApiKeyHelpButton" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 class="text-2xl font-bold text-white mb-6">Cara Mendapatkan API Key Google AI Studio</h2>
+            <div class="prose-custom">
+                <p>Untuk menggunakan aplikasi ini, Anda memerlukan sebuah "kunci" khusus dari Google yang disebut API Key. Anggap saja ini seperti password untuk mengakses kekuatan AI Google. Tenang, mendapatkannya gratis dan mudah! Ikuti langkah-langkah di bawah ini.</p>
+                <h3>Langkah 1: Kunjungi Google AI Studio</h3><ol><li>Buka browser web Anda.</li><li>Kunjungi situs resmi: <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer">aistudio.google.com</a></li><li>Login dengan Akun Google Anda.</li></ol>
+                <h3>Langkah 2: Buat API Key Baru</h3><ol><li>Klik tombol <strong>"Get API key"</strong> di menu kiri.</li><li>Klik tombol <strong>"Create API key in new project"</strong>.</li></ol>
+                <h3>Langkah 3: Salin dan Simpan API Key Anda</h3><ol><li>Google akan membuatkan kunci rahasia. Klik tombol untuk <strong>menyalin (copy)</strong> kunci tersebut.</li><li>Kembali ke aplikasi ini, <strong>tempel (paste)</strong> kunci ke dalam kolom "Google AI Studio API Key".</li><li>Klik tombol <strong>"Simpan Kunci"</strong>. Jika berhasil, Anda siap untuk login!</li></ol>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Bantuan Aplikasi -->
+    <div id="appHelpModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div id="appHelpModalOverlay" class="absolute inset-0 bg-black/70"></div>
+        <div class="relative bg-gray-800 text-gray-300 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 rounded-2xl shadow-lg">
+            <button id="closeAppHelpButton" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 class="text-2xl font-bold text-white mb-6">Tutorial Cara Menggunakan Aplikasi</h2>
+            <div class="prose-custom">
+                <p>Selamat datang di Generator Prompt Sinematik! Aplikasi ini membantu Anda membuat deskripsi (prompt) video yang detail dan kreatif berdasarkan gambar. Berikut cara kerjanya:</p>
+                <h3>Langkah 1: Unggah Gambar</h3>
+                <p>Klik atau seret sebuah gambar ke dalam kotak putus-putus. Gambar ini akan menjadi inspirasi utama untuk video Anda.</p>
+                <h3>Langkah 2: Pilih Rasio</h3>
+                <p>Tentukan format video Anda. Pilih <strong>Landscape (16:9)</strong> untuk tampilan lebar seperti film, atau <strong>Portrait (9:16)</strong> untuk format vertikal seperti media sosial.</p>
+                <h3>Langkah 3: Dapatkan Rekomendasi AI</h3>
+                <p>Setelah gambar terunggah, klik tombol <strong>"Dapatkan Rekomendasi AI"</strong>. AI akan menganalisis gambar Anda dan menyarankan 5 gaya visual yang paling cocok.</p>
+                <h3>Langkah 4: Pilih Gaya Visual Favorit Anda</h3>
+                <p>Dari 5 rekomendasi yang muncul, pilih salah satu gaya yang paling Anda sukai dengan mengkliknya.</p>
+                <h3>Langkah 5: Hasilkan Prompt Detail</h3>
+                <p>Setelah memilih gaya, klik tombol <strong>"Hasilkan Prompt"</strong>. AI akan menggabungkan analisis gambar, pilihan rasio, dan gaya visual Anda menjadi sebuah prompt yang lengkap dan detail dalam bahasa Inggris.</p>
+                <h3>Hasil Akhir</h3>
+                <p>Prompt yang sudah jadi akan muncul di bagian bawah. Anda bisa langsung menyalinnya dengan tombol <strong>"Salin"</strong> dan menggunakannya di platform generator video AI favorit Anda.</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Impor fungsi yang diperlukan dari SDK Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyBP5U5nCEWgG3mi_2ZbeMaIkPfwxYI9Dtw",
+            authDomain: "cinegen-dd29a.firebaseapp.com",
+            projectId: "cinegen-dd29a",
+            storageBucket: "cinegen-dd29a.appspot.com",
+            messagingSenderId: "97399617942",
+            appId: "1:97399617942:web:cb761a6faa7d1706ca45b7"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // --- MANAJEMEN TAMPILAN & AUTENTIKASI ---
+        const loginView = document.getElementById('loginView');
+        const appView = document.getElementById('appView');
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('loginError');
+        const logoutButton = document.getElementById('logoutButton');
+        const apiKeyInput = document.getElementById('apiKey');
+        const apiKeyStatus = document.getElementById('apiKeyStatus');
+        const saveApiKeyButton = document.getElementById('saveApiKeyButton');
+        const deleteApiKeyButton = document.getElementById('deleteApiKeyButton');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        
+        // Elemen Modal Bantuan
+        const apiKeyHelpButton = document.getElementById('apiKeyHelpButton');
+        const apiKeyHelpModal = document.getElementById('apiKeyHelpModal');
+        const closeApiKeyHelpButton = document.getElementById('closeApiKeyHelpButton');
+        const apiKeyHelpModalOverlay = document.getElementById('apiKeyHelpModalOverlay');
+        const appHelpButton = document.getElementById('appHelpButton');
+        const appHelpModal = document.getElementById('appHelpModal');
+        const closeAppHelpButton = document.getElementById('closeAppHelpButton');
+        const appHelpModalOverlay = document.getElementById('appHelpModalOverlay');
+
+        async function validateApiKey(key) {
+            if (!key) return false;
+            const validationUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`;
+            try {
+                const response = await fetch(validationUrl);
+                return response.ok;
+            } catch (error) {
+                console.error("API Key validation error:", error);
+                return false;
+            }
+        }
+        
+        window.addEventListener('DOMContentLoaded', async () => {
+            const savedApiKey = localStorage.getItem('googleApiKey');
+            if (savedApiKey) {
+                apiKeyInput.value = savedApiKey;
+                apiKeyStatus.textContent = 'Memvalidasi kunci tersimpan...';
+                apiKeyStatus.className = 'text-yellow-400 text-xs mt-2';
+                const isValid = await validateApiKey(savedApiKey);
+                if (isValid) {
+                    apiKeyStatus.textContent = 'Kunci API tersimpan dan valid.';
+                    apiKeyStatus.className = 'text-green-400 text-xs mt-2';
+                } else {
+                    apiKeyStatus.textContent = 'Kunci API tersimpan tidak valid.';
+                    apiKeyStatus.className = 'text-red-500 text-xs mt-2';
+                    localStorage.removeItem('googleApiKey');
+                }
+            } else {
+                apiKeyStatus.textContent = 'Silakan masukkan dan simpan API Key Anda.';
+                apiKeyStatus.className = 'text-gray-400 text-xs mt-2';
+            }
+        });
+
+        saveApiKeyButton.addEventListener('click', async () => {
+            const keyToSave = apiKeyInput.value;
+            if (!keyToSave) {
+                apiKeyStatus.textContent = 'Kolom API Key tidak boleh kosong.';
+                apiKeyStatus.className = 'text-red-500 text-xs mt-2';
+                return;
+            }
+            apiKeyStatus.textContent = 'Memvalidasi...';
+            apiKeyStatus.className = 'text-yellow-400 text-xs mt-2';
+            const isValid = await validateApiKey(keyToSave);
+            if (isValid) {
+                localStorage.setItem('googleApiKey', keyToSave);
+                apiKeyStatus.textContent = 'Kunci API berhasil disimpan dan valid!';
+                apiKeyStatus.className = 'text-green-400 text-xs mt-2';
+            } else {
+                apiKeyStatus.textContent = 'Kunci API tidak valid. Periksa kembali.';
+                apiKeyStatus.className = 'text-red-500 text-xs mt-2';
+            }
+        });
+
+        deleteApiKeyButton.addEventListener('click', () => {
+            localStorage.removeItem('googleApiKey');
+            apiKeyInput.value = '';
+            apiKeyStatus.textContent = 'Kunci API telah dihapus.';
+            apiKeyStatus.className = 'text-gray-400 text-xs mt-2';
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            const hasValidApiKey = localStorage.getItem('googleApiKey');
+            if (user && hasValidApiKey) {
+                loginView.classList.add('hidden');
+                appView.classList.remove('hidden');
+                userEmailDisplay.textContent = `Masuk sebagai: ${user.email}`;
+            } else {
+                loginView.classList.remove('hidden');
+                appView.classList.add('hidden');
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const hasValidApiKey = localStorage.getItem('googleApiKey');
+            
+            loginError.textContent = ''; 
+
+            if (!hasValidApiKey) {
+                loginError.textContent = 'Silakan simpan API Key yang valid terlebih dahulu.';
+                return;
+            }
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch((error) => {
+                    console.error("Login error:", error.code, error.message);
+                    loginError.textContent = 'Email atau password salah. Silakan coba lagi.';
+                });
+        });
+
+        logoutButton.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                // Membersihkan form setelah logout berhasil
+                emailInput.value = '';
+                passwordInput.value = '';
+                apiKeyInput.value = '';
+                apiKeyStatus.textContent = 'Silakan masukkan dan simpan API Key Anda.';
+                apiKeyStatus.className = 'text-gray-400 text-xs mt-2';
+                loginError.textContent = '';
+            }).catch((error) => {
+                console.error('Logout error:', error);
+            });
+        });
+
+        // --- LOGIKA MODAL BANTUAN ---
+        apiKeyHelpButton.addEventListener('click', () => { apiKeyHelpModal.classList.remove('hidden'); });
+        closeApiKeyHelpButton.addEventListener('click', () => { apiKeyHelpModal.classList.add('hidden'); });
+        apiKeyHelpModalOverlay.addEventListener('click', () => { apiKeyHelpModal.classList.add('hidden'); });
+        
+        appHelpButton.addEventListener('click', () => { appHelpModal.classList.remove('hidden'); });
+        closeAppHelpButton.addEventListener('click', () => { appHelpModal.classList.add('hidden'); });
+        appHelpModalOverlay.addEventListener('click', () => { appHelpModal.classList.add('hidden'); });
+
+        // --- LOGIKA GENERATOR PROMPT ---
+        const imageUpload = document.getElementById('imageUpload');
+        const dropzone = document.getElementById('dropzone');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        const getRecommendationsButton = document.getElementById('getRecommendationsButton');
+        const recommendationsButtonText = document.getElementById('recommendationsButtonText');
+        const recommendationsSpinner = document.getElementById('recommendationsSpinner');
+        
+        const styleSelectionContainer = document.getElementById('styleSelectionContainer');
+        const styleOptions = document.getElementById('styleOptions');
+        
+        const generatePromptContainer = document.getElementById('generatePromptContainer');
+        const generateFinalPromptButton = document.getElementById('generateFinalPromptButton');
+        const finalPromptButtonText = document.getElementById('finalPromptButtonText');
+        const finalPromptSpinner = document.getElementById('finalPromptSpinner');
+
+        const promptResultContainer = document.getElementById('promptResultContainer');
+        const promptResult = document.getElementById('promptResult');
+        const copyButton = document.getElementById('copyButton');
+
+        let fileMimeType = '';
+        let base64Data = '';
+
+        imageUpload.addEventListener('change', handleFileSelect);
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-indigo-500'); });
+        dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('border-indigo-500'); });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-indigo-500');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                imageUpload.files = e.dataTransfer.files;
+                handleFileSelect({ target: imageUpload });
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                fileMimeType = file.type;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    base64Data = e.target.result.split(',')[1];
+                    imagePreviewContainer.classList.remove('hidden');
+                    getRecommendationsButton.disabled = false;
+                    styleSelectionContainer.classList.add('hidden');
+                    generatePromptContainer.classList.add('hidden');
+                    promptResultContainer.classList.add('hidden');
+                    styleOptions.innerHTML = '';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function getStyleRecommendations() {
+            const apiKey = localStorage.getItem('googleApiKey');
+            if (!apiKey) return null;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const instructionPrompt = `Analyze the provided image (subject, action, environment, mood). Based on your analysis, suggest 5 distinct and creative cinematic visual styles that would be a good fit. For each style, provide a short, catchy name and a one-sentence description. Known styles include "Frozen Orbit", "Left Arc", "Behind the Scenes", "Glass Floor", "Descend", "Crane Up", "Quick Zoom-In", "Quick Zoom-Out", "Dolly In", "Dolly Out", "Truck Left", "Truck Right", "Reverse Vertigo", "Tracking Shot", "Food Focus", "Fisheye Lens", "Rack Focus", "FPV Drone", "Glamour Shot", "Head Lock", "Heroic Orbit", "Dutch Angle", "Pedestal Up", "Turntable", "Point of View", "Top-Down Tracking", and "Whip Zoom". You can use these or invent new ones that fit the image. Return the result as a valid JSON array of objects, where each object has a "name" (string) and "description" (string) key. Example: [{"name": "Epic Reveal", "description": "The camera starts low and slowly tilts up to reveal the subject heroically."}]`;
+            const payload = { contents: [{ role: "user", parts: [{ text: instructionPrompt }, { inlineData: { mimeType: fileMimeType, data: base64Data } }] }], generationConfig: { responseMimeType: "application/json" } };
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) return null;
+                const result = await response.json();
+                return JSON.parse(result.candidates[0].content.parts[0].text);
+            } catch (error) {
+                console.error("Error getting recommendations:", error);
+                return null;
+            }
+        }
+
+        getRecommendationsButton.addEventListener('click', async () => {
+            getRecommendationsButton.disabled = true;
+            recommendationsButtonText.textContent = 'Menganalisis...';
+            recommendationsSpinner.classList.remove('hidden');
+            const recommendations = await getStyleRecommendations();
+            styleOptions.innerHTML = ''; 
+            if (recommendations && recommendations.length > 0) {
+                recommendations.forEach((style, index) => {
+                    const styleId = `style_${index}`;
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = `<input type="radio" id="${styleId}" name="visual-style" value="${style.name}" class="hidden" data-description="${style.description}"><label for="${styleId}" class="cursor-pointer text-left block p-3 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors duration-200"><strong class="block">${style.name}</strong><span class="text-xs text-gray-400">${style.description}</span></label>`;
+                    styleOptions.appendChild(wrapper);
+                });
+                styleSelectionContainer.classList.remove('hidden');
+                generatePromptContainer.classList.remove('hidden');
+            } else {
+                styleOptions.innerHTML = '<p class="text-red-500 text-center">Gagal mendapatkan rekomendasi gaya dari AI. Coba lagi.</p>';
+                styleSelectionContainer.classList.remove('hidden');
+            }
+            getRecommendationsButton.disabled = false;
+            recommendationsButtonText.textContent = 'Dapatkan Rekomendasi AI';
+            recommendationsSpinner.classList.add('hidden');
+        });
+
+        async function getFinalPrompt(styleName, styleDescription, aspectRatio) {
+            const apiKey = localStorage.getItem('googleApiKey');
+            if (!apiKey) return "Error: API Key tidak ditemukan.";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const styleInstruction = `The core visual style is "${styleName}": ${styleDescription}`;
+            const instructionPrompt = `Your task is to act as a cinematic prompt generator. You will be given an image. Perform a detailed analysis of the image internally, but **do not show the analysis in your output**. Based on your internal analysis, your **only** output should be a highly detailed, ready-to-use cinematic prompt in English for a text-to-video AI. ${styleInstruction} The final prompt should be a single block of text, structured with clear sections like 'Subject', 'Action', 'Environment', 'Camera Movement', 'Visual Details', and 'Mood & Style'. **Crucially, add a final section 'Aspect Ratio: ${aspectRatio}' to the end of the prompt.** Make the entire prompt vivid and compelling.`;
+            const payload = { contents: [{ role: "user", parts: [{ text: instructionPrompt }, { inlineData: { mimeType: fileMimeType, data: base64Data } }] }] };
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const result = await response.json();
+                return result.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error("Error getting final prompt:", error);
+                return "Gagal menghasilkan prompt akhir. Silakan coba lagi.";
+            }
+        }
+
+        generateFinalPromptButton.addEventListener('click', async () => {
+            const selectedStyleRadio = document.querySelector('input[name="visual-style"]:checked');
+            if (!selectedStyleRadio) {
+                alert("Silakan pilih gaya visual terlebih dahulu.");
+                return;
+            }
+            generateFinalPromptButton.disabled = true;
+            finalPromptButtonText.textContent = 'Menghasilkan...';
+            finalPromptSpinner.classList.remove('hidden');
+            promptResultContainer.classList.remove('hidden');
+            promptResult.textContent = 'AI sedang membuat prompt akhir...';
+            const styleName = selectedStyleRadio.value;
+            const styleDescription = selectedStyleRadio.dataset.description;
+            const selectedRatio = document.querySelector('input[name="aspect-ratio"]:checked').value;
+            const finalPrompt = await getFinalPrompt(styleName, styleDescription, selectedRatio);
+            promptResult.textContent = finalPrompt;
+            generateFinalPromptButton.disabled = false;
+            finalPromptButtonText.textContent = 'Hasilkan Prompt';
+            finalPromptSpinner.classList.add('hidden');
+        });
+
+        copyButton.addEventListener('click', () => {
+            const textArea = document.createElement('textarea');
+            textArea.style.position = 'fixed';
+            textArea.style.top = '-9999px';
+            textArea.style.left = '-9999px';
+            textArea.value = promptResult.textContent;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                copyButton.textContent = 'Tersalin!';
+            } catch (err) {
+                console.error('Gagal menyalin teks: ', err);
+                copyButton.textContent = 'Gagal';
+            }
+            document.body.removeChild(textArea);
+            setTimeout(() => { copyButton.textContent = 'Salin'; }, 2000);
+        });
+    </script>
+</body>
+</html>
