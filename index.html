@@ -148,7 +148,6 @@
             <div id="subjectFocusContainer" class="hidden">
                 <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 2: Tentukan Subjek Utama</h2>
                 <input type="text" id="subjectFocusInput" class="shadow-inner bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5" placeholder="Contoh: Sepatu merah di tengah, wanita yang tersenyum">
-                <p class="text-xs text-gray-400 mt-2">Beri tahu AI apa yang harus menjadi fokus utama dalam gambar.</p>
             </div>
 
             <!-- Langkah 3: Pilih Rasio -->
@@ -161,17 +160,26 @@
                     <label for="ratio_portrait" class="cursor-pointer text-center py-2 px-6 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors duration-200">Portrait (9:16)</label>
                 </div>
             </div>
-
-            <!-- Langkah 4: Dapatkan Rekomendasi Gaya -->
+            
+            <!-- Langkah 4: Atur Durasi -->
             <div>
-                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 4: Dapatkan & Pilih Gaya Visual</h2>
+                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 4: Atur Durasi Video</h2>
+                <div class="flex items-center space-x-4">
+                    <input id="durationSlider" type="range" min="2" max="8" value="5" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                    <span id="durationValue" class="font-bold text-indigo-300 w-16 text-center">5 detik</span>
+                </div>
+            </div>
+
+            <!-- Langkah 5: Dapatkan Rekomendasi Urutan -->
+            <div>
+                <h2 class="text-xl font-semibold text-white mb-3 border-b border-gray-700 pb-2">Langkah 5: Dapatkan & Pilih Urutan Sinematik</h2>
                 <button id="getRecommendationsButton" disabled class="w-full bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-md flex items-center justify-center">
                     <span id="recommendationsButtonText">Dapatkan Rekomendasi AI</span>
                     <div id="recommendationsSpinner" class="spinner-small hidden"></div>
                 </button>
             </div>
 
-            <!-- Langkah 4.5: Opsi Gaya (Dihasilkan Dinamis) -->
+            <!-- Opsi Urutan (Dihasilkan Dinamis) -->
             <div id="styleSelectionContainer" class="hidden">
                 <div id="styleOptions" class="flex flex-col gap-3 custom-radio-group"></div>
             </div>
@@ -213,21 +221,17 @@
             </button>
             <h2 class="text-2xl font-bold text-white mb-6">Tutorial Cara Menggunakan Aplikasi</h2>
             <div class="prose-custom">
-                <p>Selamat datang di CineGen! Aplikasi ini adalah asisten kreatif Anda untuk mengubah gambar menjadi ide video sinematik. Ikuti panduan mudah ini:</p>
+                <p>Selamat datang di CineGen! Aplikasi ini adalah asisten sutradara AI Anda. Ikuti panduan ini untuk menciptakan ide video yang menakjubkan:</p>
                 <h3>Langkah 1: Unggah Gambar & Tentukan Fokus</h3>
-                <ol>
-                    <li>Klik atau seret gambar Anda ke dalam kotak yang tersedia.</li>
-                    <li>Setelah gambar muncul, sebuah kolom teks <strong>"Tentukan Subjek Utama"</strong> akan tampil.</li>
-                    <li>Isi kolom ini dengan deskripsi singkat tentang objek atau orang yang ingin Anda jadikan fokus utama. Ini sangat penting agar AI tidak salah fokus.</li>
-                </ol>
-                <h3>Langkah 2: Pilih Rasio Video</h3>
-                <p>Pilih format video yang Anda inginkan: <strong>Landscape (16:9)</strong> untuk tampilan lebar, atau <strong>Portrait (9:16)</strong> untuk format vertikal.</p>
-                <h3>Langkah 3: Dapatkan Rekomendasi Gaya</h3>
-                <p>Klik tombol biru <strong>"Dapatkan Rekomendasi AI"</strong>. Aplikasi akan menganalisis gambar dan fokus Anda, lalu memberikan 5 rekomendasi gaya visual yang paling cocok.</p>
-                <h3>Langkah 4: Pilih Gaya & Dapatkan Prompt Anda!</h3>
-                <p>Di bawah tombol rekomendasi, akan muncul 5 pilihan gaya. Cukup <strong>klik salah satu gaya</strong> yang paling Anda sukai. Aplikasi akan <strong>secara otomatis dan instan</strong> membuatkan prompt video yang detail untuk Anda di bagian paling bawah.</p>
+                <p>Klik atau seret gambar Anda ke dalam kotak. Setelah gambar muncul, isi kolom <strong>"Tentukan Subjek Utama"</strong> untuk memberitahu AI objek mana yang paling penting.</p>
+                <h3>Langkah 2 & 3: Atur Rasio & Durasi</h3>
+                <p>Pilih format video (Landscape/Portrait) dan atur durasi total yang Anda inginkan menggunakan slider (2-8 detik).</p>
+                <h3>Langkah 4: Dapatkan Rekomendasi Urutan</h3>
+                <p>Klik tombol biru <strong>"Dapatkan Rekomendasi AI"</strong>. AI akan bertindak sebagai sutradara, merancang 5 rekomendasi "mini-adegan" yang berbeda, lengkap dengan pembagian waktunya, dan pas dalam durasi yang Anda tentukan.</p>
+                <h3>Langkah 5: Pilih Urutan & Dapatkan Prompt Anda!</h3>
+                <p>Dari 5 rekomendasi, <strong>klik salah satu urutan</strong> yang paling Anda sukai. Aplikasi akan <strong>langsung</strong> menampilkan prompt video yang detail dan siap pakai di bagian bawah.</p>
                 <h3>Memulai Proyek Baru</h3>
-                <p>Jika Anda ingin memulai dari awal dengan gambar baru, klik ikon panah melingkar (Tombol Reset) di pojok kanan atas. Ini akan membersihkan seluruh dashboard dan Anda bisa mulai lagi.</p>
+                <p>Klik ikon panah melingkar (Tombol Reset) di pojok kanan atas untuk membersihkan dashboard dan memulai dari awal.</p>
             </div>
         </div>
     </div>
@@ -393,6 +397,9 @@
         
         const subjectFocusContainer = document.getElementById('subjectFocusContainer');
         const subjectFocusInput = document.getElementById('subjectFocusInput');
+        
+        const durationSlider = document.getElementById('durationSlider');
+        const durationValue = document.getElementById('durationValue');
 
         const getRecommendationsButton = document.getElementById('getRecommendationsButton');
         const recommendationsButtonText = document.getElementById('recommendationsButtonText');
@@ -420,9 +427,14 @@
             styleOptions.innerHTML = '';
             promptResultContainer.classList.add('hidden');
             promptResult.textContent = '';
+            durationSlider.value = 5;
+            durationValue.textContent = '5 detik';
         }
 
         resetButton.addEventListener('click', resetDashboard);
+        durationSlider.addEventListener('input', (e) => {
+            durationValue.textContent = `${e.target.value} detik`;
+        });
 
         imageUpload.addEventListener('change', handleFileSelect);
         dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-indigo-500'); });
@@ -439,7 +451,7 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
-                resetDashboard(); // Reset dulu sebelum memproses file baru
+                resetDashboard(); 
                 fileMimeType = file.type;
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -453,14 +465,25 @@
             }
         }
 
-        async function getStyleRecommendations(subjectFocus) {
+        async function getSequenceRecommendations(subjectFocus, duration, aspectRatio) {
             const apiKey = localStorage.getItem('googleApiKey');
             if (!apiKey) return null;
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             
-            const focusInstruction = subjectFocus ? `The user has specified that the main subject to focus on is: "${subjectFocus}". Ensure your analysis and suggestions revolve around this subject.` : '';
+            const focusInstruction = subjectFocus ? `The user has specified that the main subject to focus on is: "${subjectFocus}".` : '';
+            const instructionPrompt = `Act as a virtual Director of Photography. Analyze the provided image. ${focusInstruction} Your task is to create 5 distinct and creative cinematic sequence prompts for a text-to-video AI. Each sequence should tell a small visual story.
 
-            const instructionPrompt = `Analyze the provided image. ${focusInstruction} Based on your analysis, suggest 5 distinct and creative cinematic visual styles that would be a good fit for the main subject. For each style, provide a short, catchy name and a one-sentence description. Known styles include "Frozen Orbit", "Left Arc", "Behind the Scenes", "Glass Floor", "Descend", "Crane Up", "Quick Zoom-In", "Quick Zoom-Out", "Dolly In", "Dolly Out", "Truck Left", "Truck Right", "Reverse Vertigo", "Tracking Shot", "Food Focus", "Fisheye Lens", "Rack Focus", "FPV Drone", "Glamour Shot", "Head Lock", "Heroic Orbit", "Dutch Angle", "Pedestal Up", "Turntable", "Point of View", "Top-Down Tracking", and "Whip Zoom". You can use these or invent new ones that fit the image. Return the result as a valid JSON array of objects, where each object has a "name" (string) and "description" (string) key.`;
+            For EACH of the 5 recommendations, follow these rules strictly:
+            1.  Provide a short, catchy "name" for the sequence.
+            2.  Provide a full "prompt" string that is highly detailed and complete, with sections for Subject, Action, Environment, Camera Movement, Visual Details, and Mood & Style.
+            3.  The sequence in the "prompt" must contain 2 to 3 distinct camera movements.
+            4.  The total duration must exactly match the user's request: ${duration} seconds.
+            5.  You must break down the "Camera Movement" section by time segments (e.g., "0-3 seconds:", "3-${duration} seconds:").
+            6.  Each segment must describe a specific camera movement, its speed, and what it reveals.
+            7.  The final movement must conclude with a smooth, deliberate stop.
+            8.  The "prompt" must include a final line for 'Aspect Ratio: ${aspectRatio}'.
+
+            Return the result as a valid JSON array of objects, where each object has a "name" (string) and a "prompt" (string) key.`;
             
             const payload = { contents: [{ role: "user", parts: [{ text: instructionPrompt }, { inlineData: { mimeType: fileMimeType, data: base64Data } }] }], generationConfig: { responseMimeType: "application/json" } };
             try {
@@ -480,19 +503,22 @@
             recommendationsSpinner.classList.remove('hidden');
             
             const subjectFocus = subjectFocusInput.value;
-            const recommendations = await getStyleRecommendations(subjectFocus);
+            const duration = durationSlider.value;
+            const selectedRatio = document.querySelector('input[name="aspect-ratio"]:checked').value;
+            const recommendations = await getSequenceRecommendations(subjectFocus, duration, selectedRatio);
 
             styleOptions.innerHTML = ''; 
             if (recommendations && recommendations.length > 0) {
                 recommendations.forEach((style, index) => {
                     const styleId = `style_${index}`;
                     const wrapper = document.createElement('div');
-                    wrapper.innerHTML = `<input type="radio" id="${styleId}" name="visual-style" value="${style.name}" class="hidden" data-description="${style.description}"><label for="${styleId}" class="cursor-pointer text-left block p-3 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors duration-200"><strong class="block">${style.name}</strong><span class="text-xs text-gray-400">${style.description}</span></label>`;
+                    // Simpan seluruh prompt di data-description
+                    wrapper.innerHTML = `<input type="radio" id="${styleId}" name="visual-style" value="${style.name}" class="hidden" data-description="${encodeURIComponent(style.prompt)}"><label for="${styleId}" class="cursor-pointer text-left block p-3 rounded-lg border border-gray-600 hover:bg-gray-700 transition-colors duration-200"><strong class="block">${style.name}</strong></label>`;
                     styleOptions.appendChild(wrapper);
                 });
                 styleSelectionContainer.classList.remove('hidden');
             } else {
-                styleOptions.innerHTML = '<p class="text-red-500 text-center">Gagal mendapatkan rekomendasi gaya dari AI. Coba lagi.</p>';
+                styleOptions.innerHTML = '<p class="text-red-500 text-center">Gagal mendapatkan rekomendasi. Coba lagi.</p>';
                 styleSelectionContainer.classList.remove('hidden');
             }
             getRecommendationsButton.disabled = false;
@@ -500,41 +526,12 @@
             recommendationsSpinner.classList.add('hidden');
         });
 
-        async function getFinalPrompt(styleName, styleDescription, aspectRatio, subjectFocus) {
-            const apiKey = localStorage.getItem('googleApiKey');
-            if (!apiKey) return "Error: API Key tidak ditemukan.";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
-            const focusInstruction = subjectFocus ? `The user has specified that the main subject to focus on is: "${subjectFocus}". Ensure your prompt revolves around this subject.` : '';
-            const styleInstruction = `The core visual style is "${styleName}": ${styleDescription}`;
-
-            const instructionPrompt = `Your task is to act as a cinematic prompt generator. You will be given an image. Perform a detailed analysis of the image internally, but **do not show the analysis in your output**. ${focusInstruction} Based on your internal analysis, your **only** output should be a highly detailed, ready-to-use cinematic prompt in English for a text-to-video AI. ${styleInstruction} The final prompt should be a single block of text, structured with clear sections like 'Subject', 'Action', 'Environment', 'Camera Movement', 'Visual Details', and 'Mood & Style'. **Crucially, add a final section 'Aspect Ratio: ${aspectRatio}' to the end of the prompt.** Make the entire prompt vivid and compelling.`;
-            const payload = { contents: [{ role: "user", parts: [{ text: instructionPrompt }, { inlineData: { mimeType: fileMimeType, data: base64Data } }] }] };
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-                const result = await response.json();
-                return result.candidates[0].content.parts[0].text;
-            } catch (error) {
-                console.error("Error getting final prompt:", error);
-                return "Gagal menghasilkan prompt akhir. Silakan coba lagi.";
-            }
-        }
-        
-        styleOptions.addEventListener('change', async (event) => {
+        styleOptions.addEventListener('change', (event) => {
             if (event.target.name === 'visual-style') {
                 const selectedStyleRadio = event.target;
-                
                 promptResultContainer.classList.remove('hidden');
-                promptResult.innerHTML = '<div class="flex items-center justify-center"><div class="spinner-small"></div><span>AI sedang membuat prompt akhir...</span></div>';
-
-                const styleName = selectedStyleRadio.value;
-                const styleDescription = selectedStyleRadio.dataset.description;
-                const selectedRatio = document.querySelector('input[name="aspect-ratio"]:checked').value;
-                const subjectFocus = subjectFocusInput.value;
-                
-                const finalPrompt = await getFinalPrompt(styleName, styleDescription, selectedRatio, subjectFocus);
-                promptResult.textContent = finalPrompt;
+                // Ambil prompt lengkap dari data-description dan tampilkan
+                promptResult.textContent = decodeURIComponent(selectedStyleRadio.dataset.description);
             }
         });
 
